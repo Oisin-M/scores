@@ -197,7 +197,7 @@ def nse(
 
             np.divide(n, 0) = np.nan    # if n == 0
                             = np.inf    # if n > 0
-                            = -np.inf   # if n > 0
+                            = -np.inf   # if n < 0
 
 
     .. tip::
