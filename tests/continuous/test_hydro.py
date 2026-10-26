@@ -20,7 +20,10 @@ import xarray as xr
 from numpy import typing as npt
 
 import scores.continuous.hydro_impl as nse_impl
+from scores.continuous import kge, pbias
 from scores.utils import DimensionError
+
+from .test_standard import BIAS_WEIGHTS, DA1_BIAS, DA2_BIAS, DA3_BIAS, DS_BIAS1, DS_BIAS2
 
 DASK_AVAILABLE = False
 try:
@@ -1159,6 +1162,7 @@ class TestNseDask(NseSetup):
         # Do the actual assertion for [1]
         assert not_terrible and not_wrong
 
+
 ## for KGE
 DA1_KGE = xr.DataArray(
     np.array([[1, 2, 3], [0, 1, 0], [0.5, -0.5, 0.5], [3, 6, 3]]),
@@ -1255,6 +1259,7 @@ EXP_KGE_message2 = "kge: obs must be an xarray.DataArray"
 EXP_KGE_message3 = "kge: scaling_factors must be an iterable of exactly 3 elements"
 EXP_KGE_message4 = "kge: method must be either '2009' or '2012'"
 
+
 @pytest.mark.parametrize(
     ("fcst", "obs", "reduce_dims", "preserve_dims", "include_components", "scaling_factors", "method", "expected"),
     [
@@ -1278,7 +1283,7 @@ def test_kge(fcst, obs, reduce_dims, preserve_dims, include_components, scaling_
     """
     Tests continuous.kge
     """
-    result = scores.continuous.kge(
+    result = kge(
         fcst,
         obs,
         reduce_dims=reduce_dims,
@@ -1300,7 +1305,7 @@ def test_kge_dask():
 
     fcst = DA3_KGE.chunk()
     obs = DA2_KGE.chunk()
-    result = scores.continuous.kge(fcst, obs)
+    result = kge(fcst, obs)
     assert isinstance(result.data, dask.array.Array)
     result = result.compute()
     assert isinstance(result.data, (np.ndarray, np.generic))
@@ -1329,7 +1334,8 @@ def test_kge_errors(fcst, obs, scaling_factors, method, expected_exception, expe
     Test continuous.kge raises error with an incorrect type and sizes
     """
     with pytest.raises(expected_exception, match=expected_message):
-        scores.continuous.kge(fcst, obs, scaling_factors=scaling_factors, method=method)
+        kge(fcst, obs, scaling_factors=scaling_factors, method=method)
+
 
 ## for pbias
 EXP_PBIAS1 = xr.DataArray(
@@ -1359,6 +1365,7 @@ EXP_PBIAS4 = xr.DataArray(np.array(-13 / 15.5 * 100))
 
 EXP_DS_PBIAS1 = xr.Dataset({"a": EXP_PBIAS1, "b": EXP_PBIAS2})
 
+
 @pytest.mark.parametrize(
     ("fcst", "obs", "reduce_dims", "preserve_dims", "weights", "expected"),
     [
@@ -1380,7 +1387,7 @@ def test_pbias(fcst, obs, reduce_dims, preserve_dims, weights, expected):
     """
     Tests continuous.pbias
     """
-    result = scores.continuous.pbias(fcst, obs, reduce_dims=reduce_dims, preserve_dims=preserve_dims, weights=weights)
+    result = pbias(fcst, obs, reduce_dims=reduce_dims, preserve_dims=preserve_dims, weights=weights)
     # xr.testing.assert_equal(result, expected)
     xr.testing.assert_allclose(result, expected, rtol=1e-10, atol=1e-10)
 
@@ -1396,7 +1403,7 @@ def test_pbias_dask():
     fcst = DA1_BIAS.chunk()
     obs = DA3_BIAS.chunk()
     weights = BIAS_WEIGHTS.chunk()
-    result = scores.continuous.pbias(fcst, obs, preserve_dims="space", weights=weights)
+    result = pbias(fcst, obs, preserve_dims="space", weights=weights)
     assert isinstance(result.data, dask.array.Array)
     result = result.compute()
     assert isinstance(result.data, np.ndarray)

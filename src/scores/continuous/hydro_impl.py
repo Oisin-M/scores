@@ -19,13 +19,13 @@ import functools
 import warnings
 from collections.abc import Hashable
 from types import SimpleNamespace
-from typing import NamedTuple
+from typing import Iterable, Literal, NamedTuple, Optional
 
 import numpy as np
 import xarray as xr
 
 import scores.continuous
-from scores.processing import broadcast_and_match_nan
+from scores.processing import aggregate, broadcast_and_match_nan
 from scores.typing import (
     FlexibleDimensionTypes,
     XarrayLike,
@@ -1103,6 +1103,7 @@ class NseUtils(SimpleNamespace):
         if not atleastone_reducedim:
             raise DimensionError(NseUtils.ERROR_NO_DIMS_TO_REDUCE)
 
+
 def kge(
     fcst: xr.DataArray,
     obs: xr.DataArray,
@@ -1279,9 +1280,7 @@ def kge(
     except ValueError as e:
         raise ValueError("kge: scaling_factors must be an iterable of exactly 3 elements") from e
 
-    reduce_dims = scores.utils.gather_dimensions(
-        fcst.dims, obs.dims, reduce_dims=reduce_dims, preserve_dims=preserve_dims
-    )
+    reduce_dims = gather_dimensions(fcst.dims, obs.dims, reduce_dims=reduce_dims, preserve_dims=preserve_dims)
     # Need to broadcast and match NaNs so that the fcst and obs are for the
     # same points
     fcst, obs = broadcast_and_match_nan(fcst, obs)
@@ -1312,6 +1311,7 @@ def kge(
         kge_dict = dict(zip(component_names, components))
         kge_s = xr.Dataset(kge_dict)
     return kge_s
+
 
 def pbias(
     fcst: XarrayLike,
@@ -1421,9 +1421,7 @@ def pbias(
         array(-0.10307618)
 
     """
-    reduce_dims = scores.utils.gather_dimensions(
-        fcst.dims, obs.dims, reduce_dims=reduce_dims, preserve_dims=preserve_dims
-    )
+    reduce_dims = gather_dimensions(fcst.dims, obs.dims, reduce_dims=reduce_dims, preserve_dims=preserve_dims)
     # Need to broadcast and match NaNs so that the mean error and obs mean are for the
     # same points
     fcst, obs = broadcast_and_match_nan(fcst, obs)
