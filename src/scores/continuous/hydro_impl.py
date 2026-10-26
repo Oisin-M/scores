@@ -1,20 +1,3 @@
-"""
-Internal module used to support the computation of Nash-Sutcliffe model
-Efficiency coefficient (NSE).
-
-The only publically exposed function should be `nse_impl.nse`.
-
-FUTUREWORK:
-
-    The data structures introduced in this score can be abstracted as they are
-    useful checks that can be applied in general to most scores. In the
-    short-term, it is likely the hydro scores (e.g. KGE, Pbias) can easily
-    adapt to this pattern .
-
-    Broader adoption can be determined in the future if the pattern works well
-    for hydro metrics.
-"""
-
 import functools
 import warnings
 from collections.abc import Hashable
