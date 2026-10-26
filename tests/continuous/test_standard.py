@@ -666,6 +666,7 @@ EXP_PERCENT_WITHIN_X6 = xr.DataArray(np.array(100 * 1 / 4))
 
 EXP_DS_PERCENT_WITHIN_X1 = xr.Dataset({"a": EXP_PERCENT_WITHIN_X1, "b": EXP_PERCENT_WITHIN_X2})
 
+
 @pytest.mark.parametrize(
     ("fcst", "obs", "reduce_dims", "preserve_dims", "weights", "expected"),
     [

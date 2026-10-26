@@ -2,9 +2,8 @@
 This module contains standard methods which may be used for continuous scoring
 """
 
-from typing import Iterable, Literal, Optional
+from typing import Optional
 
-import numpy as np
 import xarray as xr
 
 import scores.functions
