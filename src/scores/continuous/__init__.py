@@ -12,8 +12,8 @@ from scores.continuous.flip_flop_impl import (
     flip_flop_index,
     flip_flop_index_proportion_exceeding,
 )
+from scores.continuous.hydro_impl import nse
 from scores.continuous.interval_impl import interval_score, quantile_interval_score
-from scores.continuous.nse_impl import nse
 from scores.continuous.quantile_loss_impl import quantile_score
 from scores.continuous.standard_impl import (
     additive_bias,

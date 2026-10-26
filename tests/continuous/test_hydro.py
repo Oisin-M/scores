@@ -19,7 +19,7 @@ import pytest
 import xarray as xr
 from numpy import typing as npt
 
-import scores.continuous.nse_impl as nse_impl
+import scores.continuous.hydro_impl as nse_impl
 from scores.utils import DimensionError
 
 DASK_AVAILABLE = False
